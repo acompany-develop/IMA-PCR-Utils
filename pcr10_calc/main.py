@@ -1,5 +1,4 @@
 import calculate_pcr10
-import hashlib
 
 # Path to IMA log
 IMA_LOG_PATH = '/sys/kernel/security/ima/ascii_runtime_measurements'
