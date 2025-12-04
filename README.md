@@ -1,23 +1,43 @@
 # IMA PCR10 Utils
 
-## Usage
+This project includes the libraries for parsing IMA log entries and calculating PCR10 values.
+
+## Project Structure
+
+```
+IMA-PCR10-Utils/
+├── py/          # Python implementation
+└── samples/     # Sample IMA files
+```
+
+## Python Usage
+
+### Requirements
+- Python 3.7+ (Tested with Python 3.12.3)
 
 ### Calculate PCR10 from IMA log
 
 Run on the attester environment (Azure VM with vTPM):
 
 ```bash
-# Calculate PCR10 from IMA log:
-# /sys/kernel/security/ima/ascii_runtime_measurements
-sudo python3 pcr10-calc/main.py
+# Calculate PCR10 from input IMA log
+# default: /sys/kernel/security/ima/ascii_runtime_measurements
+sudo python3 py/examples/pcr10.py
 ```
 
-or run on the verifier environment with the received IMA log file:
+When using the default input, please run it in an Azure VM (i.e. attester) environment where vTPM is available.
+
+Sample IMA log files located within the `samples/` directory are also available.
+
+### Using as a library
 
 ```python
-import pcr10_calc.calculate_pcr10 as pcr10_calc
-pcr_value_sha256 = pcr10_calc.get_pcr10_sha256(input_path)
-print(f"PCR 10 value (SHA-256): {pcr_value_sha256.hex().upper()}")
+import hashlib
+from py.ima_lib import read_ima_log_file, calculate_pcr10
+
+entries = read_ima_log_file("/sys/kernel/security/ima/ascii_runtime_measurements")
+pcr_value = calculate_pcr10(entries, hash_func=hashlib.sha256, template_hash_func=hashlib.sha256)
+print(f"PCR 10: {pcr_value.hex().upper()}")
 ```
 
 ### Compare with the actual PCR10
