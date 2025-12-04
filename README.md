@@ -17,6 +17,8 @@ IMA-PCR10-Utils/
 
 ### Calculate PCR10 from IMA log
 
+Run on the attester environment (Azure VM with vTPM):
+
 ```bash
 # Calculate PCR10 from input IMA log
 # default: /sys/kernel/security/ima/ascii_runtime_measurements
@@ -38,7 +40,9 @@ pcr_value = calculate_pcr10(entries, hash_func=hashlib.sha256, template_hash_fun
 print(f"PCR 10: {pcr_value.hex().upper()}")
 ```
 
-### Compare the actual PCR10
+### Compare with the actual PCR10
+
+Run on the attester environment (Azure VM with vTPM):
 
 ```bash
 sudo apt update
