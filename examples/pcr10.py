@@ -3,7 +3,7 @@ import sys
 import os
 
 # Add parent directory to path to import from py package
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from imapcr10 import read_ima_log_file, calculate_pcr10
 
 DEFAULT_IMA_LOG_PATH = "/sys/kernel/security/ima/ascii_runtime_measurements"
@@ -31,7 +31,7 @@ def main():
     pcr_hash_func = set_hash_function(pcr_hash_type)
 
     # Read IMA log entries
-    entries = read_ima_log_file(input_path, as_stream=False)
+    entries = read_ima_log_file(input_path)
     
     # Calculate PCR10
     pcr_value = calculate_pcr10(
