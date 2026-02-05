@@ -14,43 +14,23 @@
 pip install git+https://github.com/acompany-develop/IMA-PCR10-Utils
 ```
 
-## Usage
+## What's inside
 
-The Python module `imapcr10` provides functionality for parsing IMA logs and calculating PCR10 from the IMA logs. It can be used as follows:
+### Module
 
-### Example Code
+The `imapcr10` module consists of the following public types and functions:
 
-```python
-import hashlib
-from imapcr10 import parse_ima_log_string, calculate_pcr10, calculate_boot_aggregate
-
-# parse IMA logs
-with open(ima_log_path, 'r') as f:
-    lines = f.read()
-entries = parse_ima_log_string(lines)
-
-# calculate PCR10 hash
-pcr_value = calculate_pcr10(entries, hash_func=hashlib.sha256)
-
-# calculate boot_aggregate
-pcrlist = [
-    bytes.fromhex("50597A27846E91D025EEF597ABBC89F72BFF9AF849094DB97B0684D8BC4C515E"),
-    bytes.fromhex("3A1F7B51E23F50DED05B83A880850913657A9AB4EBC8B0CAA574D46B2E39A864"),
-    bytes.fromhex("3D458CFE55CC03EA1F443F1562BEEC8DF51C75E14A9FCF9A7234A13F198E7969"),
-    bytes.fromhex("3D458CFE55CC03EA1F443F1562BEEC8DF51C75E14A9FCF9A7234A13F198E7969"),
-    bytes.fromhex("A274E8CAD520128A8B8E607F7216645A288E81E09F3F130186EC4EF84754B7B7"),
-    bytes.fromhex("CC39B36D65EC93BB33B631B75E43AACF35BCF872C78BA312263FC0022422C107"),
-    bytes.fromhex("3D458CFE55CC03EA1F443F1562BEEC8DF51C75E14A9FCF9A7234A13F198E7969"),
-    bytes.fromhex("A11C5239A222BB78072C2C73CAA691BB9A0F118DE2D95CDCE1FCE06711E4D3ED"),
-    bytes.fromhex("D2B43B51A68170474AA807E80A08D1971177BB8B137C0E84301D008D1BB03CCF"),
-    bytes.fromhex("DA94827889CCEDE4CB7BBE3BF720BD4DBFCAD7434A9C2D068CCC2CEF58903F27"),
-]
-boot_aggregate = calculate_boot_aggregate(pcrlist)
-```
+| Name | Description |
+|---|---|
+| `IMALogEntry` | Represents a single IMA log entry (`pcr_idx`, `template_hash`, `template_name`, `hash_algo`, `file_hash`, `file_path`). |
+| `parse_ima_log_string` | Parse an ASCII IMA log string into a list of `IMALogEntry`. |
+| `build_template_fields` | Build `ima-ng` template fields (digest/name) from an `IMALogEntry`. |
+| `calculate_expected_template_hash` | Recompute the expected template hash for an entry (default: SHA-1). |
+| `calculate_pcr10` | Replay PCR10 by extending PCR10 with each `ima-ng` entry (default chain hash: SHA-256). |
+| `validate_ima_log_entry` | Validate a single entry by comparing the template hash with the recomputed value. |
+| `calculate_boot_aggregate` | Calculate `boot_aggregate` from PCR0..PCR9 values. |
 
 ### CLI Tools / Example Scripts
-
-You can calculate PCR10 values from IMA log files using the example script.
 
 The `examples/` directory contains scripts that serve as both usage examples and command-line tools. Sample IMA log and PCR list files are also available.
 
