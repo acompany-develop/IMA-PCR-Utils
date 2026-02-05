@@ -52,11 +52,12 @@ boot_aggregate = calculate_boot_aggregate(pcrlist)
 
 You can calculate PCR10 values from IMA log files using the example script.
 
-The `examples/` directory contains scripts that serve as both usage examples and command-line tools. Sample IMA logs are also available.
+The `examples/` directory contains scripts that serve as both usage examples and command-line tools. Sample IMA log and PCR list files are also available.
 
 | Script | Description |
 |--------|-------------|
 | `pcr10.py` | Calculate PCR10 from input IMA log |
+| `boot_aggregate.py` | Calculate boot_aggregate from PCR list file including PCR[0-9] |
 
 ### Compare with the true PCR10 hash value
 
