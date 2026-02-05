@@ -12,7 +12,6 @@ __all__ = [
     "calculate_pcr10",
     "validate_ima_log_entry",
     "validate_ima_log_entries",
-    "lookup_boot_aggregate",
     "calculate_boot_aggregate",
 ]
 
@@ -30,21 +29,23 @@ class IMALogEntry:
     pcr_idx: str
     template_hash: str
     template_name: str
-    file_data: str  # Format: "algo:hexdigest"
+    hash_algo: str
+    file_hash: bytes
     file_path: str
 
     # Methods
-    def __init__(self, pcr_idx: str, template_hash: str, template_name: str, file_data: str, file_path: str):
+    def __init__(self, pcr_idx: str, template_hash: str, template_name: str, hash_algo: str, file_hash: bytes, file_path: str):
         """Initialize IMALogEntry structure."""
         self.pcr_idx = pcr_idx
         self.template_hash = template_hash
         self.template_name = template_name
-        self.file_data = file_data
+        self.hash_algo = hash_algo
+        self.file_hash = file_hash
         self.file_path = file_path
 
     def __str__(self) -> str:
         """Return a string representation of the IMALogEntry."""
-        return " ".join([self.pcr_idx, self.template_hash, self.template_name, self.file_data, self.file_path])
+        return " ".join([self.pcr_idx, self.template_hash, self.template_name, self.hash_algo + ":" + self.file_hash.hex(), self.file_path])
 
     @classmethod
     def from_string(cls, line: str) -> "IMALogEntry":
@@ -64,9 +65,14 @@ class IMALogEntry:
         pcr_idx = parts[0]
         template_hash = parts[1]
         template_name = parts[2]
-        file_data = parts[3]
+        # format: "algo:hexdigest" e.g. "sha256:0123456789abcdef..."
+        try:
+            hash_algo, file_hash_hex = parts[3].split(':')
+            file_hash = bytes.fromhex(file_hash_hex)
+        except ValueError as e:
+            raise ValueError(f"Invalid file_hash format: {parts[3]}") from e
         file_path = " ".join(parts[4:])
-        return cls(pcr_idx, template_hash, template_name, file_data, file_path)
+        return cls(pcr_idx, template_hash, template_name, hash_algo, file_hash, file_path)
 
 
 def parse_ima_log_string(log_string: str) -> List[IMALogEntry]:
@@ -103,11 +109,8 @@ def build_template_fields(entry: IMALogEntry) -> Tuple[bytes, bytes, bytes, byte
     """
     # 1. Create d-ng (Digest) field
     # Format: [Algo(string)] + [:] + [\0] + [digest_bytes]
-    try:
-        algo, digest_hex = entry.file_data.split(':')
-        digest_bytes = bytes.fromhex(digest_hex)
-    except ValueError as e:
-        raise ValueError(f"Invalid file_data format: {entry.file_data}") from e
+    algo = entry.hash_algo
+    digest_bytes = entry.file_hash
     # "algo:\0" + digest_bytes
     d_ng_content = algo.encode('ascii') + b':' + b'\x00' + digest_bytes
     d_ng_field = struct.pack('<I', len(d_ng_content)) + d_ng_content
@@ -205,21 +208,6 @@ def validate_ima_log_entries(entries: List[IMALogEntry], hash_func: Callable[[by
         if not validate_ima_log_entry(entry, hash_func):
             return False
     return True
-
-
-def lookup_boot_aggregate(entries: List[IMALogEntry]) -> IMALogEntry | None:
-    """
-    Lookup boot aggregate in IMA log entries.
-
-    Args:
-        entries: List of IMALogEntry structures
-    Returns:
-        IMALogEntry | None
-    """
-    for entry in entries:
-        if entry.pcr_idx == "10" and entry.template_name == "ima-ng" and entry.file_path == "boot_aggregate":
-            return entry
-    return None
 
 
 def calculate_boot_aggregate(pcrlist: List[bytes], hash_func: Callable[[bytes], bytes] = hashlib.sha256) -> bytes:
