@@ -29,11 +29,13 @@ python pcr10.py [--in $IMA_LOG_PATH] [--hash-algorithm $HASH_ALGORITHM] [--out $
 ### Options
 
 - `-i, --in`: Path to the IMA log file (default: `/sys/kernel/security/ima/ascii_runtime_measurements`)
-- `-a, --hash-algorithm`: Hash algorithm to use for PCR10 calculation: `sha1`, `sha256`, `sha384`, `sha512` (default: `sha256`)
+- `-a, --hash-algorithm`: Hash algorithm to use for PCR10 calculation: `sha1`,
+  `sha256`, `sha384`, `sha512` (default: `sha256`)
 - `-o, --out`: Path to the output file (default: stdout)
 - `-f, --format`: Output format: `HEX`, `hex`, `binary` (default: `HEX`)
 
-When using the default input, please run with root privileges in an environment where vTPM is available.
+When using the default input, please run with root privileges in an environment
+where vTPM is available.
 
 ### Example
 
@@ -59,12 +61,17 @@ python boot_aggregate.py --in $PCR_LIST_PATH --selector $SELECTOR [--hash-algori
 
 ### Required Arguments
 
-- `-i, --in`: Path to the PCR list file (raw blob). The file must be the concatenation of PCR digests for the indices specified by `--selector`, in the same order (each digest size is determined by the selector's hash algorithm).
-- `-s, --selector`: PCR selector string: `<hash_algorithm>:all` or `<hash_algorithm>:0,1,2,...` (must include 0 to 9)
+- `-i, --in`: Path to the PCR list file (raw blob). The file must be the
+  concatenation of PCR digests for the indices specified by `--selector`, in
+  the same order (each digest size is determined by the selector's hash
+  algorithm)
+- `-s, --selector`: PCR selector string: `<hash_algorithm>:all` or
+  `<hash_algorithm>:0,1,2,...` (must include 0 to 9)
 
 ### Options
 
-- `-a, --hash-algorithm`: Hash algorithm to use to calculate boot_aggregate: `sha1`, `sha256`, `sha384`, `sha512` (default: `sha256`)
+- `-a, --hash-algorithm`: Hash algorithm to use to calculate boot_aggregate:
+  `sha1`, `sha256`, `sha384`, `sha512` (default: `sha256`)
 - `-o, --out`: Path to the output file (default: stdout)
 - `-f, --format`: Output format: `HEX`, `hex`, `binary` (default: `hex`)
 
