@@ -2,7 +2,18 @@ name: Lint (Markdown)
 
 on:
   pull_request:
+    paths:
+      - '**/*.md'
+      - .github/workflows/lint-md.yml
+      - .markdownlint.yaml
   push:
+    branches:
+      - main
+    paths:
+      - '**/*.md'
+      - .github/workflows/lint-md.yml
+      - .markdownlint.yaml
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
